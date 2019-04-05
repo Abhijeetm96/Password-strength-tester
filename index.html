@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html lang='en-US'>
+  <head>
+    <meta charset='utf-8'/>
+    <title>Password Strength Tester</title>
+    <link rel='stylesheet' type='text/css' href='css/bulma-0.7.4/css/bulma.min.css'/>
+    <link rel='stylesheet' type='text/css' href='css/font-awesome-4.7.0/css/font-awesome.min.css'/>
+  </head>
+
+  <body>
+    <div class='card'>
+    <div class='card-content'>
+   <strong><h1>Password Tester</h1></strong> 
+  </div></div>
+    <section class='section'>
+
+      <div class='container'>
+        <div class='tile is-ancestor'>
+          <div class='tile is-vertical'>
+            <div class='tile'>
+              <div class='tile is-parent'>
+                <article class='tile is-child'>
+                  <div class='card'>
+                    <div class='card-content'>
+                      <div class='field'>
+                        <label for='password' class='label'>
+                          <i class='fa fa-fw fa-check-circle-o'></i>
+                          Password
+                        </label>
+
+                        <input
+                          id='password'
+                          type='password'
+                          class='input is-medium'
+                          title='Enter password.'
+                          placeholder='Enter your password'
+                        />
+
+                        <p class='help'>
+                          Type a password to test in the field above.
+                        </p><!-- help -->
+                      </div><!-- field -->
+
+                      <div class='field'>
+                        <label
+                          for='show-password'
+                          class='checkbox'
+                          title='Show password text.'
+                        >
+                          <input
+                            id='show-password'
+                            type='checkbox'
+                            title='Show password text.'
+                          />
+
+                          Show password text
+                        </label>
+                      </div><!-- field -->
+                    </div><!-- card-content -->
+                  </div><!-- card -->
+                </article><!-- tile.is-child -->
+              </div><!-- tile.is-parent -->
+            </div><!-- tile -->
+
+            <div id='results-wrap' class='tile is-parent is-vertical'>
+              <article class='tile is-child box is-info'>
+                <div class='content'>
+                  <p class='title'>
+                    Password Strength:
+                    <span id='strength'></span>
+                  </p>
+
+                  <progress
+                    id='score'
+                    class='progress is-success'
+                    title='Estimated password strength.'
+                    value='0'
+                    max='100'
+                  >0%</progress>
+
+                  <p class='subtitle'>
+                    <b>
+                      Number of Guesses:
+                    </b>
+
+                    10<sup id='guesses-log10'>0</sup>
+                    <span id='guesses' style='display: none'></span>
+                    <br/>
+
+                    <span class='help'>
+                      Estimated number of attempts needed to guess this
+                      password.
+                    </span>
+                  </p>
+
+                </div><!-- content -->
+              </article><!-- tile.is-child -->
+
+              <article
+                id='warning-wrap'
+                class='tile is-child notification is-danger'
+              >
+                <div class='content'>
+                  <p class='title'>
+                    Warning
+                  </p><!-- title -->
+
+                  <p id='warning' class='subtitle'>
+                  </p><!-- subtitle -->
+                </div><!-- content -->
+              </article><!-- tile.is-child -->
+
+              <article
+                id='suggestions-wrap'
+                class='tile is-child notification is-warning'
+              >
+                <div class='content'>
+                  <p class='title'>
+                    Suggestions
+                  </p><!-- title -->
+
+                  <ul id='suggestions'>
+                  </ul>
+                </div><!-- content -->
+              </article><!-- tile.is-child -->
+
+              <article id='details' class='tile is-child box'>
+                <div class='tabs'>
+                  <ul>
+                    <li 
+                      class='is-active'
+                      title='View estimated crack times.'
+                      data-id='tab-details-times'
+                    >
+                      <a>
+                        <i class='fa fa-fw fa-clock-o'></i>
+                        Crack Times
+                      </a>
+                    </li>
+
+                    <li 
+                      title='View test details.'
+                      data-id='tab-details-tests'
+                    >
+                      <a>
+                        <i class='fa fa-fw fa-cubes'></i>
+                        Test Details
+                      </a>
+                    </li>
+                  </ul>
+                </div><!-- tabs -->
+
+                <div id='tab-details-times' class='content'>
+                  <table class='table is-hoverable is-fullwidth'>
+                    <thead>
+                      <tr>
+                        <th>Attack Type</th>
+                        <th>Crack Time</th>
+                      </tr>
+                    </thead>
+
+                    <tbody>
+                      <tr title='Online attack on a service that rate-limits password authentication attempts.'>
+                        <td>Online/Throttling</td>
+                        <td>
+                          <i id='icon-online-slow' class='fa fa-fw'></i>
+                          <span id='time-online-slow'></span>
+                        </td>
+                      </tr>
+
+                      <tr title='Online attack on a service that doesn&apos;t rate-limit, or where an attacker has outsmarted rate-limiting.'>
+                        <td>Online/No Throttling</td>
+                        <td>
+                          <i id='icon-online-fast' class='fa fa-fw'></i>
+                          <span id='time-online-fast'></span>
+                        </td>
+                      </tr>
+
+                      <tr title='Offline attack. Assumes multiple attackers, proper user-unique salting, and a slow hash function with moderate work factor, such as bcrypt, scrypt, or PBKDF2.'>
+                        <td>Offline/Slow</td>
+                        <td>
+                          <i id='icon-offline-slow' class='fa fa-fw'></i>
+                          <span id='time-offline-slow'></span>
+                        </td>
+                      </tr>
+
+                      <tr title='Offline attack with user-unique salting but a fast hash function like SHA-1, SHA-256, or MD5. A wide range of reasonable numbers anywhere from one billion to one trillion guesses per second, depending on number of cores and machines,  and ballparking at 10B/sec.'>
+                        <td>Offline/Fast</td>
+                        <td>
+                          <i id='icon-offline-fast' class='fa fa-fw'></i>
+                          <span id='time-offline-fast'></span>
+                        </td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div><!-- content -->
+
+                <div id='tab-details-tests' class='content is-hidden'>
+                  <table class='table is-hoverable is-fullwidth'>
+                    <thead>
+                      <tr>
+                        <th>Pattern</th>
+                        <th>Number of Guesses</th>
+                      </tr>
+                    </thead>
+
+                    <tbody id='tests'>
+                    </tbody>
+                  </table><!-- table -->
+                </div><!-- content -->
+              </article><!-- tile.is-child -->
+            </div><!-- tile -->
+
+            <div id='empty-password-wrap' class='tile is-parent is-vertical'>
+              <article class='tile is-child box'>
+                <div class='content'>
+                  <p>
+                    This section of the page will display test results
+                    once you enter a password in the text field above.
+                  </p>
+                </div><!-- content -->
+              </article><!-- tile.is-child -->
+            </div><!-- tile.is-parent -->
+          </div><!-- tile.is-vertical -->
+
+
+            </article><!-- tile.is-child -->
+          </div><!-- tile.is-parent -->
+        </div><!-- tile.is-ancestor -->
+      </div><!-- container -->
+    </section><!-- section -->
+
+    <script type='text/javascript' src='js/zxcvbn.js'></script>
+    <script type='text/javascript' src='js/ui.js'></script>
+  </body>
+</html>
+
